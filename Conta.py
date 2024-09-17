@@ -1,4 +1,5 @@
 from datetime import datetime
+from Cliente import Cliente
 
 class Conta:
     def __init__(self, numero, titular, saldo):
@@ -32,3 +33,26 @@ class Conta:
 
     def get_titular(self):
         return self.__titular
+
+# Classe ContaPoupanca
+class ContaPoupanca(Conta):
+    def __init__(self, numero, titular: Cliente, saldo=0.0, juros=0.02):
+        super().__init__(numero, titular, saldo)
+        self.juros = juros
+
+    def atualizar_saldo(self):
+        self.saldo += self.saldo * self.juros  # Aplica os juros no saldo
+
+# Classe ContaCorrente
+class ContaCorrente(Conta):
+    def __init__(self, numero, titular: Cliente, saldo=0.0, desconto=1.0):
+        super().__init__(numero, titular, saldo)
+        self.desconto = desconto
+
+    def sacar(self, valor):
+        valor_total = valor + self.desconto  # Desconta o valor fixo no saque
+        return super().sacar(valor_total)
+
+    def depositar(self, valor):
+        valor_total = valor - self.desconto  # Desconta o valor fixo no depósito
+        super().depositar(valor_total)
