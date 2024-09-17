@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox
 from Banco import Banco
-from Conta import Conta
+from Conta import ContaPoupanca, ContaCorrente
 from Cliente import Cliente
 
 bancos = []
@@ -73,7 +73,7 @@ class TelaPrincipal:
     def cadastrar_conta(self):
         janela = tk.Toplevel(self.root)
         janela.title("Cadastrar Conta")
-        janela.geometry("300x300")
+        janela.geometry("400x400")
 
         tk.Label(janela, text="Número da Conta:").pack(pady=5)
         numero_entry = tk.Entry(janela)
@@ -87,15 +87,27 @@ class TelaPrincipal:
         saldo_entry = tk.Entry(janela)
         saldo_entry.pack(pady=5)
 
+        # Adicionando a escolha do tipo de conta
+        tipo_conta_var = tk.StringVar(value="Poupança")
+        tk.Label(janela, text="Tipo de Conta:").pack(pady=5)
+        tk.Radiobutton(janela, text="Poupança", variable=tipo_conta_var, value="Poupança").pack()
+        tk.Radiobutton(janela, text="Corrente", variable=tipo_conta_var, value="Corrente").pack()
+
         tk.Button(janela, text="Cadastrar", command=lambda: self.adicionar_conta(
-            numero_entry.get(), titular_entry.get(), saldo_entry.get()
+            numero_entry.get(), titular_entry.get(), saldo_entry.get(), tipo_conta_var.get()
         )).pack(pady=20)
 
-    def adicionar_conta(self, numero, titular_nome, saldo):
+    # Função para adicionar conta com a nova lógica
+    def adicionar_conta(self, numero, titular_nome, saldo, tipo_conta):
         titular = Cliente(titular_nome, "", "")
-        conta = Conta(numero, titular, float(saldo))
+
+        if tipo_conta == "Poupança":
+            conta = ContaPoupanca(numero, titular, float(saldo))
+        else:
+            conta = ContaCorrente(numero, titular, float(saldo))
+
         contas.append(conta)
-        messagebox.showinfo("Sucesso", "Conta cadastrada com sucesso!")
+        messagebox.showinfo("Sucesso", f"Conta {tipo_conta} cadastrada com sucesso!")
 
     def mostrar_contas(self):
         if contas:
@@ -189,13 +201,26 @@ class TelaPrincipal:
             messagebox.showwarning("Erro", "Conta não encontrada.")
 
     def gerar_relatorio(self):
-        if contas:
-            relatorio = "\n".join([
-                f"Número: {conta.get_numero()}, Titular: {conta.get_titular().get_nome()}, Saldo: {conta.get_saldo():.2f}"
-                for conta in contas])
-            messagebox.showinfo("Relatório de Contas", relatorio)
+        janela = tk.Toplevel(self.root)
+        janela.title("Gerar Relatório de Conta")
+        janela.geometry("300x200")
+
+        tk.Label(janela, text="Número da Conta:").pack(pady=5)
+        numero_entry = tk.Entry(janela)
+        numero_entry.pack(pady=5)
+
+        tk.Button(janela, text="Gerar", command=lambda: self.gerar_relatorio_conta(numero_entry.get())).pack(pady=20)
+
+    def gerar_relatorio_conta(self, numero):
+        conta = self.buscar_conta(numero)
+        if conta:
+            try:
+                conta.gerar_relatorio()
+                messagebox.showinfo("Sucesso", f"Relatório da conta {numero} gerado com sucesso!")
+            except Exception as e:
+                messagebox.showerror("Erro", f"Erro ao gerar o relatório: {str(e)}")
         else:
-            messagebox.showinfo("Relatório", "Nenhuma conta cadastrada.")
+            messagebox.showwarning("Erro", "Conta não encontrada.")
 
     # Funções para Cliente
     def cadastrar_cliente(self):
