@@ -97,7 +97,6 @@ class TelaPrincipal:
             numero_entry.get(), titular_entry.get(), saldo_entry.get(), tipo_conta_var.get()
         )).pack(pady=20)
 
-    # Função para adicionar conta com a nova lógica
     def adicionar_conta(self, numero, titular_nome, saldo, tipo_conta):
         titular = Cliente(titular_nome, "", "")
 
@@ -201,13 +200,26 @@ class TelaPrincipal:
             messagebox.showwarning("Erro", "Conta não encontrada.")
 
     def gerar_relatorio(self):
-        if contas:
-            relatorio = "\n".join([
-                f"Número: {conta.get_numero()}, Titular: {conta.get_titular().get_nome()}, Saldo: {conta.get_saldo():.2f}"
-                for conta in contas])
-            messagebox.showinfo("Relatório de Contas", relatorio)
+        janela = tk.Toplevel(self.root)
+        janela.title("Gerar Relatório de Conta")
+        janela.geometry("300x200")
+
+        tk.Label(janela, text="Número da Conta:").pack(pady=5)
+        numero_entry = tk.Entry(janela)
+        numero_entry.pack(pady=5)
+
+        tk.Button(janela, text="Gerar", command=lambda: self.gerar_relatorio_conta(numero_entry.get())).pack(pady=20)
+
+    def gerar_relatorio_conta(self, numero):
+        conta = self.buscar_conta(numero)
+        if conta:
+            try:
+                conta.gerar_relatorio()
+                messagebox.showinfo("Sucesso", f"Relatório da conta {numero} gerado com sucesso!")
+            except Exception as e:
+                messagebox.showerror("Erro", f"Erro ao gerar o relatório: {str(e)}")
         else:
-            messagebox.showinfo("Relatório", "Nenhuma conta cadastrada.")
+            messagebox.showwarning("Erro", "Conta não encontrada.")
 
     # Funções para Cliente
     def cadastrar_cliente(self):
