@@ -49,25 +49,23 @@ class Conta:
 
         print(f"Relatório salvo como {nome_arquivo}")
 
-# Classe ContaPoupanca
 class ContaPoupanca(Conta):
     def __init__(self, numero, titular: Cliente, saldo=0.0, juros=0.02):
         super().__init__(numero, titular, saldo)
         self.juros = juros
 
     def atualizar_saldo(self):
-        self.saldo += self.saldo * self.juros  # Aplica os juros no saldo
+        self.saldo += self.saldo * self.juros
 
-# Classe ContaCorrente
 class ContaCorrente(Conta):
     def __init__(self, numero, titular: Cliente, saldo=0.0, desconto=1.0):
         super().__init__(numero, titular, saldo)
         self.desconto = desconto
 
     def sacar(self, valor):
-        valor_total = valor + self.desconto  # Desconta o valor fixo no saque
+        valor_total = valor + self.desconto
         return super().sacar(valor_total)
 
     def depositar(self, valor):
-        valor_total = valor - self.desconto  # Desconta o valor fixo no depósito
+        valor_total = valor - self.desconto
         super().depositar(valor_total)

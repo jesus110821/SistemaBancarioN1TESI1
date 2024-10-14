@@ -97,7 +97,6 @@ class TelaPrincipal:
             numero_entry.get(), titular_entry.get(), saldo_entry.get(), tipo_conta_var.get()
         )).pack(pady=20)
 
-    # Função para adicionar conta com a nova lógica
     def adicionar_conta(self, numero, titular_nome, saldo, tipo_conta):
         titular = Cliente(titular_nome, "", "")
 
